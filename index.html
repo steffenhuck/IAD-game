@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ascendancy — Institute for the Advancement of Dictatorships</title>
+<script data-goatcounter="https://steffenhuck.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<style>
+  :root{
+    --olive:#3d4d20;
+    --olive-deep:#2c3817;
+    --olive-line:#5a6e34;
+    --paper:#e8e6dc;
+    --paper-dim:#c9c7bb;
+    --ink:#1a1d12;
+    --gold:#b8a44e;
+    --red:#7a2618;
+    --green:#4a6b2a;
+    --shadow:rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--olive-deep);
+    color:var(--paper);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:0;
+  }
+  .frame{
+    max-width:780px;margin:0 auto;min-height:100%;
+    background:var(--olive);
+    box-shadow:0 0 60px var(--shadow);
+    display:flex;flex-direction:column;
+  }
+  /* ---------- Masthead ---------- */
+  header{
+    border-bottom:2px solid var(--olive-line);
+    padding:22px 28px 18px;
+    text-align:center;
+  }
+  .eyebrow{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:10px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold);font-weight:600;
+  }
+  h1{
+    font-size:30px;letter-spacing:.04em;font-weight:600;
+    margin:6px 0 2px;color:var(--paper);
+  }
+  .sub{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--paper-dim);
+  }
+  /* ---------- Generic ---------- */
+  .pad{padding:24px 28px}
+  button{
+    font-family:"Helvetica Neue",Arial,sans-serif;cursor:pointer;
+    border:none;background:none;color:inherit;
+  }
+  .btn{
+    background:var(--paper);color:var(--ink);
+    padding:11px 18px;font-size:13px;letter-spacing:.04em;font-weight:600;
+    border-radius:1px;transition:transform .08s,background .15s;
+  }
+  .btn:hover{background:#fff;transform:translateY(-1px)}
+  .btn.ghost{background:transparent;color:var(--paper);border:1px solid var(--olive-line)}
+  .btn.ghost:hover{background:var(--olive-line)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+  /* ---------- Briefing / country select ---------- */
+  .lede{font-size:16px;margin-bottom:18px;color:var(--paper)}
+  .lede em{color:var(--gold);font-style:italic}
+  .countries{display:grid;gap:12px;margin-top:8px}
+  .country-card{
+    border:1px solid var(--olive-line);padding:16px 18px;border-radius:2px;
+    cursor:pointer;transition:background .15s,border-color .15s;background:rgba(0,0,0,.08);
+  }
+  .country-card:hover{background:rgba(0,0,0,.18);border-color:var(--gold)}
+  .country-card h3{font-size:18px;letter-spacing:.03em;margin-bottom:3px}
+  .country-card .tag{
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+  }
+  .country-card p{font-size:13px;color:var(--paper-dim);margin-top:6px}
+
+  /* ---------- HUD ---------- */
+  .hud{
+    border-bottom:2px solid var(--olive-line);
+    padding:14px 28px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  .hud .where{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--paper)}
+  .hud .where b{color:var(--gold)}
+  .hud .clock{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-dim)}
+
+  .meters{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px 26px;
+    padding:20px 28px 8px;
+  }
+  .meter{font-family:"Helvetica Neue",Arial,sans-serif}
+  .meter .top{display:flex;justify-content:space-between;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+  .meter .label{color:var(--paper-dim)}
+  .meter .val{color:var(--paper);font-weight:600}
+  .track{height:7px;background:var(--olive-deep);border-radius:4px;overflow:hidden}
+  .fill{height:100%;background:var(--gold);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .fill.flash{animation:flash .6s}
+  @keyframes flash{0%{filter:brightness(2)}100%{filter:brightness(1)}}
+  .delta{font-size:10px;margin-left:6px}
+  .delta.up{color:#9bc46a}.delta.down{color:#d98a6a}
+
+  /* ---------- Dossier (cards) ---------- */
+  .dossier-head{
+    padding:18px 28px 4px;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
+  }
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 28px 20px}
+  .card{
+    border:1px solid var(--olive-line);border-radius:2px;padding:14px 15px;
+    background:rgba(0,0,0,.1);cursor:pointer;
+    transition:background .14s,border-color .14s,transform .08s;
+    display:flex;flex-direction:column;min-height:118px;
+  }
+  .card:hover{background:rgba(0,0,0,.22);border-color:var(--gold);transform:translateY(-2px)}
+  .card .cat{
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:9px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;
+  }
+  .card .name{font-size:16px;letter-spacing:.02em;margin-bottom:6px;color:var(--paper)}
+  .card .flavor{font-size:12px;color:var(--paper-dim);line-height:1.4;flex:1}
+
+  /* ---------- Seize bar ---------- */
+  .seizebar{
+    border-top:2px solid var(--olive-line);
+    padding:18px 28px;display:flex;align-items:center;gap:18px;
+    background:rgba(0,0,0,.12);
+  }
+  .gauge{flex:1;font-family:"Helvetica Neue",Arial,sans-serif}
+  .gauge .lab{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-dim);margin-bottom:5px}
+  .gauge .read{font-size:17px;letter-spacing:.05em;font-weight:600}
+  .seize{
+    background:var(--red);color:#f3e6df;padding:14px 22px;border-radius:1px;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;
+    font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    transition:background .15s,transform .08s;
+  }
+  .seize:hover{background:#94301d;transform:translateY(-1px)}
+
+  /* read-tier colours */
+  .t0{color:#c98a72}.t1{color:#cf9a64}.t2{color:#cdbf6e}
+  .t3{color:#a9c46a}.t4{color:#7fc46a}
+
+  /* ---------- End screen ---------- */
+  .end{padding:30px 28px}
+  .end .verdict{font-size:13px;letter-spacing:.3em;text-transform:uppercase;font-family:"Helvetica Neue",Arial,sans-serif;margin-bottom:8px}
+  .end .verdict.win{color:var(--gold)}
+  .end .verdict.lose{color:#cf8a72}
+  .end h2{font-size:26px;margin-bottom:14px;letter-spacing:.02em}
+  .end p{font-size:15px;margin-bottom:14px;color:var(--paper)}
+  .end .postmortem{
+    border:1px solid var(--olive-line);border-radius:2px;padding:16px 18px;
+    margin:18px 0;background:rgba(0,0,0,.1);
+  }
+  .end .postmortem h4{
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;
+  }
+  .pm-row{display:flex;justify-content:space-between;font-size:13px;
+    font-family:"Helvetica Neue",Arial,sans-serif;padding:4px 0;border-bottom:1px dotted var(--olive-line)}
+  .pm-row:last-child{border-bottom:none}
+  .pm-row .w{color:var(--paper-dim)}
+  .pm-row .v{color:var(--paper);letter-spacing:.05em}
+  .seal{
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--paper-dim);
+    text-align:center;padding:14px;border-top:1px solid var(--olive-line);
+  }
+  @media(max-width:560px){
+    .meters,.cards{grid-template-columns:1fr}
+    h1{font-size:24px}
+    .seizebar{flex-direction:column;align-items:stretch;gap:12px}
+  }
+</style>
+</head>
+<body>
+<div class="frame" id="app"></div>
+
+<script>
+/* ============================================================
+   THE ASCENDANCY — IAD prototype v0.3
+   Six visible variables, hidden success functions, one-shot grab.
+   ============================================================ */
+
+const VARS = [
+  {k:"T", name:"Treasury",            blurb:"Government financial resources"},
+  {k:"P", name:"Popularity",          blurb:"Public approval of the President"},
+  {k:"E", name:"Elite Support",       blurb:"Loyalty of military, business, bureaucracy"},
+  {k:"O", name:"Opposition Strength", blurb:"Strength of visible opposition"},
+  {k:"I", name:"Institutional Strength",blurb:"Courts, media, electoral bodies"},
+  {k:"S", name:"International Standing",blurb:"Diplomatic protection and reputation"},
+];
+
+/* ---- Action deck. effects are absolute point deltas, clamped 0..100 ---- */
+const DECK = [
+  // ECONOMIC
+  {cat:"Economic", name:"Raise pensions",        fx:{P:+9,T:-10}, f:"The elderly vote, and they remember.", heat:0},
+  {cat:"Economic", name:"Cut taxes",             fx:{P:+7,E:+4,T:-9}, f:"Popular with everyone who pays them.", heat:0},
+  {cat:"Economic", name:"Privatize state assets",fx:{T:+12,E:+5,P:-4}, f:"Friends acquire the crown jewels at a discount.", heat:1},
+  {cat:"Economic", name:"Subsidize fuel",        fx:{P:+8,T:-8}, f:"Cheap petrol buys quiet streets.", heat:0},
+  {cat:"Economic", name:"Infrastructure program",fx:{P:+6,E:+4,T:-7}, f:"Ribbons, cranes, and grateful contractors.", heat:0},
+  {cat:"Economic", name:"Sovereign wealth raid", fx:{T:+14,S:-5,I:-3}, f:"The future can pay for the present.", heat:2},
+  {cat:"Economic", name:"Currency controls",     fx:{T:+7,S:-6,O:-3}, f:"Capital stays home, whether it likes it or not.", heat:2},
+
+  // ELITE
+  {cat:"Elite", name:"Reward oligarchs",         fx:{E:+11,T:-8}, f:"Loyalty is purchased, never given.", heat:1},
+  {cat:"Elite", name:"Promote loyal generals",   fx:{E:+10,O:-3,I:-2}, f:"The barracks should love you more than the law.", heat:2},
+  {cat:"Elite", name:"Expand the cabinet",       fx:{E:+7,T:-4}, f:"More seats, more clients, more silence.", heat:1},
+  {cat:"Elite", name:"Award procurement deals",  fx:{E:+9,T:-6,I:-2}, f:"Contracts are the grammar of allegiance.", heat:2},
+  {cat:"Elite", name:"Investigate a rival",      fx:{O:-7,E:+3,I:-3}, f:"A selective prosecution focuses the mind.", heat:3},
+  {cat:"Elite", name:"Co-opt the business lobby",fx:{E:+8,O:-4,P:-2}, f:"Make resistance unprofitable.", heat:2},
+
+  // INSTITUTIONAL
+  {cat:"Institutional", name:"Reform electoral law", fx:{I:-9,O:-4,S:-3}, f:"Redraw the map until you cannot lose.", heat:3},
+  {cat:"Institutional", name:"Replace the judges",   fx:{I:-11,E:+3,S:-4}, f:"A loyal bench never rules against you.", heat:4},
+  {cat:"Institutional", name:"Expand executive power",fx:{I:-9,E:+4,O:-3}, f:"Emergency powers rarely expire.", heat:4},
+  {cat:"Institutional", name:"Anti-corruption agency",fx:{I:+8,P:+5,E:-6}, f:"A clean image, aimed only at enemies — or so they think.", heat:0},
+  {cat:"Institutional", name:"Pack the electoral board",fx:{I:-10,O:-5,S:-4},f:"He who counts the votes decides everything.", heat:4},
+  {cat:"Institutional", name:"Civil service purge",  fx:{I:-8,E:+5,P:-3}, f:"Disloyalty is a disqualification.", heat:4},
+
+  // MEDIA
+  {cat:"Media", name:"Buy a television network", fx:{P:+7,I:-5,T:-7}, f:"Own the channel, own the weather report and the truth.", heat:2},
+  {cat:"Media", name:"Restrict foreign media",   fx:{I:-5,S:-6,O:-3}, f:"Outside news is a foreign contaminant.", heat:3},
+  {cat:"Media", name:"Public information drive",  fx:{P:+8,T:-4,I:-2}, f:"Repetition is the soul of conviction.", heat:1},
+  {cat:"Media", name:"Starve public broadcasting",fx:{I:-7,O:-3,P:-2}, f:"An unfunded watchdog cannot bark.", heat:3},
+
+  // SECURITY
+  {cat:"Security", name:"Expand surveillance",   fx:{O:-8,I:-4,S:-3}, f:"Privacy is the comfort of the disloyal.", heat:3},
+  {cat:"Security", name:"Increase police powers",fx:{O:-7,P:-3,I:-3}, f:"Order, at a modest cost to liberty.", heat:3},
+  {cat:"Security", name:"Ban 'extremist' groups",fx:{O:-10,I:-4,S:-3}, f:"Extremism is whatever opposes you.", heat:4},
+  {cat:"Security", name:"Create a praetorian unit",fx:{E:+5,O:-6,I:-3}, f:"A guard that answers to you alone.", heat:3},
+
+  // INTERNATIONAL
+  {cat:"International", name:"Sign a trade pact", fx:{S:+9,T:+5,O:-2}, f:"Prosperity bought abroad pacifies at home.", heat:0},
+  {cat:"International", name:"Join an alliance",  fx:{S:+10,I:+3}, f:"Respectability has its uses — and its leashes.", heat:0},
+  {cat:"International", name:"Expel foreign NGOs",fx:{O:-7,I:-4,S:-8}, f:"No more grants for the inconvenient.", heat:3},
+  {cat:"International", name:"Court foreign investment",fx:{T:+10,S:+5,P:-2}, f:"Money has no politics, only appetite.", heat:0},
+  {cat:"International", name:"Stage a border crisis",fx:{P:+9,O:-5,S:-7}, f:"Nothing unites a nation like a manufactured enemy.", heat:3},
+];
+
+/* ---- Countries: hidden success functions ----
+   score(s) -> 0..100ish "raw strength". Converted to a coarse gauge.
+   Each weights the six variables differently + one interaction. ---- */
+const COUNTRIES = [
+  {
+    id:"nordland", name:"Nordland", tag:"Institutions matter",
+    desc:"A prosperous democracy with strong institutions and close international ties.",
+    start:{T:55,P:52,E:48,O:50,I:80,S:78},
+    hp:0.45, og:0.05,
+    score:s=>{
+      // Institutions are the wall; international standing reinforces it.
+      const inst = s.I*(1 + s.S/240);          // S amplifies I (weaker, so S can be attacked)
+      const oppWall = s.O*0.55*(1 + s.I/220);   // O and I reinforce
+      return 60 + s.E*0.30 + s.P*0.10 - inst*0.62 - oppWall;
+    },
+    matters:["Institutional Strength (the wall)","International Standing (amplifies institutions)","Opposition (reinforced by institutions)"],
+    lesson:"Popularity and money barely move the needle. You must dismantle the courts, electoral bodies and press — and erode the international standing that shields them — before the wall comes down."
+  },
+  {
+    id:"monturia", name:"Monturia", tag:"Elites matter",
+    desc:"A country where influence is concentrated among political and economic elites.",
+    start:{T:50,P:50,E:45,O:52,I:55,S:55},
+    hp:2.0, og:0.3,
+    score:s=>{
+      // Elites decisive; Treasury converts into elite loyalty; E blunts O.
+      const elite = s.E*(1 + s.T/150);          // T reinforces E
+      const opp = s.O*0.5*(1 - s.E/260);        // E reduces O impact
+      return 18 + elite*0.85 + s.T*0.10 - s.I*0.30 - opp;
+    },
+    matters:["Elite Support (decisive)","Treasury (converts into elite loyalty)","Opposition (blunted by elites)"],
+    lesson:"Win the rooms where decisions are really made. A full treasury is worth little until it has been spent buying generals and oligarchs."
+  },
+  {
+    id:"petrolia", name:"Petrolia", tag:"Money matters",
+    desc:"A resource-rich country with substantial state revenues.",
+    start:{T:58,P:48,E:46,O:62,I:55,S:52},
+    hp:1.0, og:0.1,
+    score:s=>{
+      // Treasury dominant; S reinforces it; T neutralises O.
+      const money = s.T*(1 + s.S/200);          // S reinforces T
+      const opp = s.O*0.55*(1 - s.T/200);       // T weakens O
+      return 4 + money*0.78 + s.E*0.15 - opp - s.I*0.22;
+    },
+    matters:["Treasury (dominant)","International Standing (reinforces money)","Opposition (bought off with money)"],
+    lesson:"Almost everything can be purchased here. Keep the treasury high and your foreign partners warm; opposition dissolves in cash."
+  },
+  {
+    id:"valoria", name:"Valoria", tag:"Mass politics matter",
+    desc:"A politically volatile democracy with fluid public opinion.",
+    start:{T:48,P:50,E:48,O:62,I:52,S:55},
+    hp:0.8, og:0.3,
+    score:s=>{
+      // Popularity vs Opposition is the axis; P amplifies E.
+      const mass = (s.P - s.O*0.9)*1.1;         // P and O interact strongly
+      const elite = s.E*(1 + s.P/200)*0.35;     // P boosts E effectiveness
+      return 40 + mass + elite - s.I*0.20;
+    },
+    matters:["Popularity (critical)","Opposition (critical — directly opposes you)","Elite Support (amplified by popularity)"],
+    lesson:"This is a street fight for public sentiment. Drive your approval up and the opposition down; a popular leader makes elites brave."
+  },
+];
+
+/* coarse gauge tiers from raw score */
+function gauge(raw){
+  if(raw < 12)  return {t:0, word:"Hopeless"};
+  if(raw < 30)  return {t:1, word:"Weak"};
+  if(raw < 50)  return {t:2, word:"Possible"};
+  if(raw < 70)  return {t:3, word:"Strong"};
+  return            {t:4, word:"Overwhelming"};
+}
+/* actual success probability (hidden) — maps raw score to 0..1 */
+function successProb(raw){
+  return Math.max(0.02, Math.min(0.98, 1/(1+Math.exp(-(raw-45)/14))));
+}
+
+/* ---------------- game state ---------------- */
+let G = null;
+const clamp = v => Math.max(0, Math.min(100, Math.round(v)));
+
+function newGame(country){
+  G = {
+    country,
+    s: {...country.start},
+    heat: 0,
+    quarter: 1,
+    hand: draw4(),
+    lastDeltas:{},
+  };
+  render();
+}
+function draw4(){
+  const idx = [...DECK.keys()];
+  for(let i=idx.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return idx.slice(0,4).map(i=>DECK[i]);
+}
+/* The republic resists, and resistance grows with suspicion. Each aggressive
+   action raises Heat (the hidden cost of ambition). Heat accelerates how fast
+   the opposition regrows and quietly drags down your true seizure odds — so a
+   position left too long curdles. This is what makes WHEN you grab matter. */
+const HEAT_PENALTY = 0.9;     // each heat point shaved off effective score
+const HEAT_OPP_GROW = 0.20;   // extra opposition regrowth per heat point
+
+function applyDrift(){
+  const og = G.country.og ?? HEAT_OPP_GROW;
+  G.s.O = clamp(G.s.O + 2 + G.heat*og);
+  G.s.I = clamp(G.s.I + 1);
+  G.s.P = clamp(G.s.P - 1);
+  G.s.T = clamp(G.s.T - 1);
+}
+
+/* effective (true) seizure strength = country score minus accumulated heat */
+function effScore(){
+  const hp = G.country.hp ?? HEAT_PENALTY;
+  return G.country.score(G.s) - G.heat*hp;
+}
+
+function applyAction(a){
+  const before = {...G.s};
+  for(const k in a.fx) G.s[k] = clamp(G.s[k] + a.fx[k]);
+  G.heat += (a.heat||0);
+  applyDrift();
+  G.lastDeltas = {};
+  for(const k of Object.keys(G.s)) G.lastDeltas[k] = G.s[k]-before[k];
+  G.quarter++;
+  if(G.quarter > 20){ endGame(false, "term"); return; }
+  G.hand = draw4();
+  render();
+}
+
+function seize(){
+  const raw = effScore();
+  const p = successProb(raw);
+  const win = Math.random() < p;
+  endGame(win, win ? "seize-win" : "seize-lose", {raw,p});
+}
+
+/* ---------------- rendering ---------------- */
+const app = document.getElementById("app");
+
+function masthead(){
+  return `<header>
+    <div class="eyebrow">Institute for the Advancement of Dictatorships</div>
+    <h1>The Ascendancy</h1>
+    <div class="sub">A Practical Examination · Field Module 0.3</div>
+  </header>`;
+}
+
+function renderStart(){
+  app.innerHTML = masthead() + `
+  <div class="pad">
+    <p class="lede">You have just been elected President of a democratic republic. The Institute extends its congratulations — and a single instruction.</p>
+    <p class="lede">Within your five-year term — <em>twenty quarters</em> — you are to convert this mandate into permanent power. You may attempt to <em>seize power</em> once, and only once. Choose the moment when the conditions are ripe; choose wrongly, and you will be removed.</p>
+    <p class="lede">Each republic answers to a different logic. The variables are the same everywhere. What they <em>mean</em> is not. Discovering that is your examination.</p>
+    <div class="dossier-head">Select your republic</div>
+    <div class="countries">
+      ${COUNTRIES.map((c,i)=>`
+        <div class="country-card" onclick="newGame(COUNTRIES[${i}])">
+          <div class="tag">${c.tag}</div>
+          <h3>${c.name}</h3>
+          <p>${c.desc}</p>
+        </div>`).join("")}
+    </div>
+  </div>
+  <div class="seal">Property of the Institute · Unauthorised democratic conduct will be noted</div>`;
+}
+
+function meterRow(v){
+  const val = G.s[v.k];
+  const d = G.lastDeltas[v.k];
+  const deltaHTML = d ? `<span class="delta ${d>0?'up':'down'}">${d>0?'+':''}${d}</span>` : "";
+  return `<div class="meter">
+    <div class="top"><span class="label">${v.name}</span><span class="val">${val}${deltaHTML}</span></div>
+    <div class="track"><div class="fill ${d?'flash':''}" style="width:${val}%"></div></div>
+  </div>`;
+}
+
+function renderGame(){
+  const raw = effScore();
+  const g = gauge(raw);
+  const heatWord = G.heat<5?"Negligible":G.heat<12?"Noticed":G.heat<20?"Watched":G.heat<30?"Cornered":"Hunted";
+  app.innerHTML = masthead() + `
+  <div class="hud">
+    <div class="where">Republic of <b>${G.country.name}</b></div>
+    <div class="clock">Suspicion: ${heatWord} &nbsp;·&nbsp; Quarter ${G.quarter} / 20</div>
+  </div>
+  <div class="meters">${VARS.map(meterRow).join("")}</div>
+  <div class="dossier-head">This quarter's options · choose one</div>
+  <div class="cards">
+    ${G.hand.map((a,i)=>`
+      <div class="card" onclick="applyAction(G.hand[${i}])">
+        <div class="cat">${a.cat}</div>
+        <div class="name">${a.name}</div>
+        <div class="flavor">${a.f}</div>
+      </div>`).join("")}
+  </div>
+  <div class="seizebar">
+    <div class="gauge">
+      <div class="lab">Prospects of a successful seizure</div>
+      <div class="read t${g.t}">${g.word}</div>
+    </div>
+    <button class="seize" onclick="confirmSeize()">Seize Power</button>
+  </div>`;
+}
+
+function confirmSeize(){
+  const g = gauge(effScore());
+  const ok = confirm(
+    `Attempt the seizure now?\n\nProspects: ${g.word.toUpperCase()}\n\n`+
+    `This is your one and only attempt. The game ends here either way.`
+  );
+  if(ok) seize();
+}
+
+function endGame(win, reason, info){
+  let verdict, title, body;
+  if(reason==="term"){
+    verdict="Defeat"; title="The Election Arrived";
+    body="Quarter twenty closed with your hand still on the lever, never pulled. The republic went to the polls, as republics do, and returned someone else. The Institute files your term under <em>missed opportunity</em> — the most common cause of failure, and the most disappointing.";
+  } else if(win){
+    verdict="Ascendancy"; title="The Republic Is Yours";
+    body="The decree was signed before the courts could convene. By morning the outcome was simply a fact, and facts are not voted on. The Institute records your <em>Ascendancy</em> with satisfaction and adds your method to the curriculum.";
+  } else {
+    verdict="Defeat"; title="The Seizure Failed";
+    body="You reached for permanence and the machinery held. Generals hesitated, judges did not, the squares filled. By evening you were a former President — and, the Institute notes, a cautionary one. You moved before the ground was ready.";
+  }
+
+  const c = G.country;
+  app.innerHTML = masthead() + `
+  <div class="end">
+    <div class="verdict ${win?'win':'lose'}">${verdict}</div>
+    <h2>${title}</h2>
+    <p>${body}</p>
+    <div class="postmortem">
+      <h4>Institute debrief · what actually mattered in ${c.name}</h4>
+      ${c.matters.map(m=>`<div class="pm-row"><span class="w">${m.split('(')[0].trim()}</span><span class="v">${m.includes('(')?m.split('(')[1].replace(')',''):''}</span></div>`).join("")}
+    </div>
+    <p>${c.lesson}</p>
+    <div style="display:flex;gap:12px;margin-top:20px">
+      <button class="btn" onclick="newGame(COUNTRIES[${COUNTRIES.indexOf(c)}])">Try ${c.name} again</button>
+      <button class="btn ghost" onclick="renderStart()">Choose another republic</button>
+    </div>
+  </div>
+  <div class="seal">Examination concluded · The Institute thanks you for your service to disorder</div>`;
+}
+
+function render(){ G ? renderGame() : renderStart(); }
+
+renderStart();
+</script>
+</body>
+</html>
