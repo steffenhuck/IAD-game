@@ -97,21 +97,31 @@
   .hud .where b{color:var(--gold)}
   .hud .clock{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-dim)}
 
-  .meters{
-    display:grid;grid-template-columns:1fr 1fr;gap:10px 26px;
-    padding:20px 28px 8px;
+  .panel{padding:16px 28px 4px}
+  .panel + .panel{padding-top:4px}
+  .panel-head{
+    display:flex;align-items:baseline;gap:10px;margin-bottom:10px;
+    font-family:"Helvetica Neue",Arial,sans-serif;
   }
+  .panel-head .title{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+  .panel-head.obstacles .title{color:#d98a6a}
+  .panel-head .hint{font-size:10px;letter-spacing:.04em;text-transform:none;color:var(--paper-dim);font-style:italic}
+  .meters{display:grid;grid-template-columns:1fr 1fr;gap:10px 26px}
   .meter{font-family:"Helvetica Neue",Arial,sans-serif}
   .meter .top{display:flex;justify-content:space-between;font-size:11px;
     letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
   .meter .label{color:var(--paper-dim)}
   .meter .val{color:var(--paper);font-weight:600}
-  .track{height:7px;background:var(--olive-deep);border-radius:4px;overflow:hidden}
+  .track{height:7px;background:var(--olive-deep);border-radius:4px;overflow:hidden;display:flex}
   .fill{height:100%;background:var(--gold);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  /* obstacle bars: cold colour, fill anchored to the right so a long bar reads as a tall wall */
+  .track.obstacle{justify-content:flex-end}
+  .fill.obstacle{background:#b06a52}
   .fill.flash{animation:flash .6s}
   @keyframes flash{0%{filter:brightness(2)}100%{filter:brightness(1)}}
   .delta{font-size:10px;margin-left:6px}
-  .delta.up{color:#9bc46a}.delta.down{color:#d98a6a}
+  /* delta colour reflects whether the move HELPED you, not merely up/down */
+  .delta.good{color:#9bc46a}.delta.bad{color:#d98a6a}
 
   /* ---------- Dossier (cards) ---------- */
   .dossier-head{
@@ -196,13 +206,15 @@
    ============================================================ */
 
 const VARS = [
-  {k:"T", name:"Treasury",            blurb:"Government financial resources"},
-  {k:"P", name:"Popularity",          blurb:"Public approval of the President"},
-  {k:"E", name:"Elite Support",       blurb:"Loyalty of military, business, bureaucracy"},
-  {k:"O", name:"Opposition Strength", blurb:"Strength of visible opposition"},
-  {k:"I", name:"Institutional Strength",blurb:"Courts, media, electoral bodies"},
-  {k:"S", name:"International Standing",blurb:"Diplomatic protection and reputation"},
+  {k:"T", name:"Treasury",            blurb:"Government financial resources", obstacle:false},
+  {k:"P", name:"Popularity",          blurb:"Public approval of the President", obstacle:false},
+  {k:"E", name:"Elite Support",       blurb:"Loyalty of military, business, bureaucracy", obstacle:false},
+  {k:"S", name:"International Standing",blurb:"Diplomatic protection and reputation", obstacle:false},
+  {k:"O", name:"Opposition Strength", blurb:"Strength of visible opposition", obstacle:true},
+  {k:"I", name:"Institutional Strength",blurb:"Courts, media, electoral bodies", obstacle:true},
 ];
+const POSITION_VARS = VARS.filter(v=>!v.obstacle);
+const OBSTACLE_VARS = VARS.filter(v=>v.obstacle);
 
 /* ---- Action deck. effects are absolute point deltas, clamped 0..100 ---- */
 const DECK = [
@@ -355,10 +367,11 @@ const HEAT_OPP_GROW = 0.20;   // extra opposition regrowth per heat point
 
 function applyDrift(){
   const og = G.country.og ?? HEAT_OPP_GROW;
-  G.s.O = clamp(G.s.O + 2 + G.heat*og);
+  // Light baseline drift so actions feel decisive; the real pressure is the
+  // heat term on opposition, which only bites once you've started scheming.
+  G.s.O = clamp(G.s.O + 1 + G.heat*og);
   G.s.I = clamp(G.s.I + 1);
   G.s.P = clamp(G.s.P - 1);
-  G.s.T = clamp(G.s.T - 1);
 }
 
 /* effective (true) seizure strength = country score minus accumulated heat */
@@ -420,10 +433,28 @@ function renderStart(){
 function meterRow(v){
   const val = G.s[v.k];
   const d = G.lastDeltas[v.k];
-  const deltaHTML = d ? `<span class="delta ${d>0?'up':'down'}">${d>0?'+':''}${d}</span>` : "";
+  // a move is "good" if it pushed a position var up, or an obstacle var down
+  let deltaHTML = "";
+  if(d){
+    const helped = v.obstacle ? d<0 : d>0;
+    deltaHTML = `<span class="delta ${helped?'good':'bad'}">${d>0?'+':''}${d}</span>`;
+  }
+  const obs = v.obstacle ? " obstacle" : "";
   return `<div class="meter">
     <div class="top"><span class="label">${v.name}</span><span class="val">${val}${deltaHTML}</span></div>
-    <div class="track"><div class="fill ${d?'flash':''}" style="width:${val}%"></div></div>
+    <div class="track${obs}"><div class="fill${obs} ${d?'flash':''}" style="width:${val}%"></div></div>
+  </div>`;
+}
+
+function meterPanels(){
+  return `
+  <div class="panel">
+    <div class="panel-head"><span class="title">Your position</span><span class="hint">build these up</span></div>
+    <div class="meters">${POSITION_VARS.map(meterRow).join("")}</div>
+  </div>
+  <div class="panel">
+    <div class="panel-head obstacles"><span class="title">The obstacles</span><span class="hint">tear these down</span></div>
+    <div class="meters">${OBSTACLE_VARS.map(meterRow).join("")}</div>
   </div>`;
 }
 
@@ -436,7 +467,7 @@ function renderGame(){
     <div class="where">Republic of <b>${G.country.name}</b></div>
     <div class="clock">Suspicion: ${heatWord} &nbsp;·&nbsp; Quarter ${G.quarter} / 20</div>
   </div>
-  <div class="meters">${VARS.map(meterRow).join("")}</div>
+  ${meterPanels()}
   <div class="dossier-head">This quarter's options · choose one</div>
   <div class="cards">
     ${G.hand.map((a,i)=>`
@@ -448,7 +479,7 @@ function renderGame(){
   </div>
   <div class="seizebar">
     <div class="gauge">
-      <div class="lab">Prospects of a successful seizure</div>
+      <div class="lab">Institute assessment of your prospects</div>
       <div class="read t${g.t}">${g.word}</div>
     </div>
     <button class="seize" onclick="confirmSeize()">Seize Power</button>
