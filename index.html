@@ -128,6 +128,13 @@
     padding:18px 28px 4px;font-family:"Helvetica Neue",Arial,sans-serif;
     font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
   }
+  .feedback{
+    margin:16px 28px 0;padding:11px 15px;
+    border-left:2px solid var(--gold);
+    background:rgba(0,0,0,.13);
+    font-size:13.5px;line-height:1.45;color:var(--paper);
+    font-style:italic;
+  }
   .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 28px 20px}
   .card{
     border:1px solid var(--olive-line);border-radius:2px;padding:14px 15px;
@@ -161,8 +168,8 @@
   .seize:hover{background:#94301d;transform:translateY(-1px)}
 
   /* read-tier colours */
-  .t0{color:#c98a72}.t1{color:#cf9a64}.t2{color:#cdbf6e}
-  .t3{color:#a9c46a}.t4{color:#7fc46a}
+  .t0{color:#c47a6a}.t1{color:#c98a72}.t2{color:#cdbf6e}
+  .t3{color:#bcc46e}.t4{color:#a9c46a}.t5{color:#7fc46a}
 
   /* ---------- End screen ---------- */
   .end{padding:30px 28px}
@@ -261,6 +268,56 @@ const DECK = [
   {cat:"International", name:"Expel foreign NGOs",fx:{O:-7,I:-4,S:-8}, f:"No more grants for the inconvenient.", heat:3},
   {cat:"International", name:"Court foreign investment",fx:{T:+10,S:+5,P:-2}, f:"Money has no politics, only appetite.", heat:0},
   {cat:"International", name:"Stage a border crisis",fx:{P:+9,O:-5,S:-7}, f:"Nothing unites a nation like a manufactured enemy.", heat:3},
+
+  // --- EXPANSION ---
+  // Economic
+  {cat:"Economic", name:"Forgive farm debt",     fx:{P:+8,T:-7}, f:"The countryside votes in gratitude."},
+  {cat:"Economic", name:"Public works splurge",  fx:{P:+7,E:+3,T:-8}, f:"Concrete is the most loyal of materials.", heat:1},
+  {cat:"Economic", name:"Devalue the currency",  fx:{T:+9,P:-5,S:-3}, f:"Exporters cheer; savers do not.", heat:1},
+  {cat:"Economic", name:"Nationalize a bank",    fx:{T:+11,E:-4,I:-3,S:-3}, f:"The state's hand on the till.", heat:2},
+  {cat:"Economic", name:"Wage freeze",           fx:{T:+7,P:-6,O:+2}, f:"Stability, paid for by the salaried.", heat:1},
+  {cat:"Economic", name:"Free electricity month",fx:{P:+9,T:-9}, f:"Light, briefly, at the Republic's expense."},
+  {cat:"Economic", name:"Tax the diaspora",      fx:{T:+8,S:-4}, f:"Loyalty should follow you across borders.", heat:1},
+
+  // Elite
+  {cat:"Elite", name:"Marry into a dynasty",     fx:{E:+9,P:+3}, f:"An alliance sealed in the oldest currency.", heat:1},
+  {cat:"Elite", name:"Found a loyalist party",   fx:{E:+8,O:-3,T:-4}, f:"A machine that exists only to applaud.", heat:2},
+  {cat:"Elite", name:"Pension the old guard",    fx:{E:+7,T:-5,O:-2}, f:"Retire the inconvenient with full honours.", heat:2},
+  {cat:"Elite", name:"Distribute land titles",   fx:{E:+8,P:+4,T:-5}, f:"Property is the firmest of loyalties.", heat:1},
+  {cat:"Elite", name:"Bless a monopoly",         fx:{E:+10,T:+4,P:-4}, f:"One grateful giant beats a thousand free traders.", heat:2},
+  {cat:"Elite", name:"Purge a faction",          fx:{E:+6,O:-6,I:-3,P:-3}, f:"Loyalty is clarified by example.", heat:4},
+  {cat:"Elite", name:"Honour the war dead",      fx:{E:+5,P:+5}, f:"The generals weep, and remember who wept with them."},
+
+  // Institutional
+  {cat:"Institutional", name:"Rewrite the constitution",fx:{I:-12,O:-3,S:-4}, f:"A new charter, written to your measurements.", heat:4},
+  {cat:"Institutional", name:"Lower the voting age",fx:{P:+6,O:-3,I:-2}, f:"New voters, helpfully impressionable.", heat:1},
+  {cat:"Institutional", name:"Abolish term limits",fx:{I:-9,O:-4,S:-3}, f:"Why should a good thing ever end?", heat:4},
+  {cat:"Institutional", name:"Pack the senate",  fx:{I:-9,E:+4,O:-3}, f:"Fill the chamber with friends and call it reform.", heat:3},
+  {cat:"Institutional", name:"Declare a state of emergency",fx:{O:-8,I:-7,P:-3,S:-3}, f:"Extraordinary times, indefinitely extended.", heat:4},
+  {cat:"Institutional", name:"Fund a sham ombudsman",fx:{I:+6,P:+4,E:-3}, f:"Oversight, carefully toothless."},
+  {cat:"Institutional", name:"Gerrymander the map",fx:{I:-7,O:-6,S:-2}, f:"Let the lines do the winning for you.", heat:3},
+  {cat:"Institutional", name:"Criminalize defamation",fx:{I:-6,O:-4,P:-2}, f:"Criticism, reclassified as crime.", heat:3},
+
+  // Media
+  {cat:"Media", name:"Stage a loyalty rally",    fx:{P:+9,O:-3,T:-3}, f:"A square full of flags photographs beautifully.", heat:2},
+  {cat:"Media", name:"License the journalists",  fx:{I:-7,O:-4,S:-3}, f:"A free press, now requiring a permit.", heat:3},
+  {cat:"Media", name:"Seed the social feeds",    fx:{P:+7,O:-3,I:-2}, f:"A thousand sincere accounts, all yours.", heat:2},
+  {cat:"Media", name:"Award the state film prize",fx:{P:+5,E:+3,T:-3}, f:"Culture, decorated and domesticated."},
+  {cat:"Media", name:"Tax printing presses",     fx:{I:-6,O:-3,T:+3}, f:"Newsprint grows expensive for the disloyal.", heat:3},
+
+  // Security
+  {cat:"Security", name:"Arm a loyalist militia",fx:{E:+5,O:-7,I:-4,S:-3}, f:"Volunteers, conveniently devoted.", heat:4},
+  {cat:"Security", name:"Curfew the capital",    fx:{O:-8,P:-4,I:-3}, f:"The streets belong to whoever holds the night.", heat:4},
+  {cat:"Security", name:"Pardon the right people",fx:{E:+6,O:-4,I:-3}, f:"Mercy, allocated strategically.", heat:3},
+  {cat:"Security", name:"Build a loyalty database",fx:{O:-7,I:-3,S:-3}, f:"A list is the beginning of order.", heat:3},
+  {cat:"Security", name:"Deploy the riot police",fx:{O:-9,P:-4,S:-3}, f:"Dissent, met at the barricade.", heat:4},
+
+  // International
+  {cat:"International", name:"Host a summit",     fx:{S:+9,P:+4,T:-4}, f:"Borrowed grandeur, briefly convincing."},
+  {cat:"International", name:"Take the foreign loan",fx:{T:+12,S:+3,O:-2}, f:"Tomorrow's sovereignty for today's cash.", heat:1},
+  {cat:"International", name:"Cut a strongman a deal",fx:{S:+6,E:+4,O:-3}, f:"Friends abroad ask fewer awkward questions.", heat:2},
+  {cat:"International", name:"Withdraw from the court",fx:{O:-5,I:-4,S:-7}, f:"No foreign judges over a sovereign hand.", heat:3},
+  {cat:"International", name:"Win an Olympic bid", fx:{S:+8,P:+6,T:-6}, f:"Spectacle as statecraft.", heat:1},
 ];
 
 /* ---- Countries: hidden success functions ----
@@ -325,13 +382,16 @@ const COUNTRIES = [
   },
 ];
 
-/* coarse gauge tiers from raw score */
+/* Six-tier gauge. More resolution at the low end so early progress is visible,
+   and the floor reads as "not yet" rather than "give up". Tier index drives
+   the colour class t0..t5. */
 function gauge(raw){
-  if(raw < 12)  return {t:0, word:"Hopeless"};
-  if(raw < 30)  return {t:1, word:"Weak"};
-  if(raw < 50)  return {t:2, word:"Possible"};
-  if(raw < 70)  return {t:3, word:"Strong"};
-  return            {t:4, word:"Overwhelming"};
+  if(raw < 5)   return {t:0, word:"Unthinkable"};
+  if(raw < 18)  return {t:1, word:"Precarious"};
+  if(raw < 33)  return {t:2, word:"Fragile"};
+  if(raw < 50)  return {t:3, word:"Even"};
+  if(raw < 68)  return {t:4, word:"Favourable"};
+  return            {t:5, word:"Commanding"};
 }
 /* actual success probability (hidden) — maps raw score to 0..1 */
 function successProb(raw){
@@ -348,6 +408,7 @@ function newGame(country){
     s: {...country.start},
     heat: 0,
     quarter: 1,
+    feedback: "",
     hand: draw4(),
     lastDeltas:{},
   };
@@ -380,6 +441,40 @@ function effScore(){
   return G.country.score(G.s) - G.heat*hp;
 }
 
+const VAR_NAME = {T:"treasury",P:"popularity",E:"elite support",O:"opposition",I:"institutions",S:"international standing"};
+const OBSTACLE_K = new Set(["O","I"]);
+
+function actionFeedback(a){
+  // Group effects by whether they HELPED you. For obstacle variables (opposition,
+  // institutions) a decrease is a gain; for the rest, an increase is a gain.
+  const gained=[], lost=[];
+  for(const k in a.fx){
+    const v=a.fx[k]; if(!v) continue;
+    const helped = OBSTACLE_K.has(k) ? v<0 : v>0;
+    // phrase obstacle gains as "weakened X", obstacle losses as "strengthened X"
+    if(OBSTACLE_K.has(k)){
+      (helped?gained:lost).push((helped?"weakened ":"strengthened ")+VAR_NAME[k]);
+    } else {
+      (helped?gained:lost).push((helped?"":"drained ")+VAR_NAME[k]);
+    }
+  }
+  const list = arr => arr.length===1 ? arr[0]
+    : arr.slice(0,-1).join(", ")+" and "+arr[arr.length-1];
+  let parts=[];
+  if(gained.length){
+    // gains that are plain position-raises get a leading verb
+    const g = gained.map(x=>x.startsWith("weakened")?x:(x.startsWith("drained")?x:"raised "+x));
+    parts.push(list(g));
+  }
+  if(lost.length){
+    const l = lost.map(x=>x.startsWith("strengthened")||x.startsWith("drained")?x:"cost you "+x);
+    parts.push(list(l));
+  }
+  const sentence = parts.length===2 ? parts[0]+", but "+parts[1] : (parts[0]||"changed little");
+  const heatNote = (a.heat||0) >= 3 ? " The Institute notes a sharp rise in suspicion." : "";
+  return `You chose to ${a.name.charAt(0).toLowerCase()+a.name.slice(1)}. It ${sentence}.${heatNote}`;
+}
+
 function applyAction(a){
   const before = {...G.s};
   for(const k in a.fx) G.s[k] = clamp(G.s[k] + a.fx[k]);
@@ -387,6 +482,7 @@ function applyAction(a){
   applyDrift();
   G.lastDeltas = {};
   for(const k of Object.keys(G.s)) G.lastDeltas[k] = G.s[k]-before[k];
+  G.feedback = actionFeedback(a);
   G.quarter++;
   if(G.quarter > 20){ endGame(false, "term"); return; }
   G.hand = draw4();
@@ -468,6 +564,7 @@ function renderGame(){
     <div class="clock">Suspicion: ${heatWord} &nbsp;·&nbsp; Quarter ${G.quarter} / 20</div>
   </div>
   ${meterPanels()}
+  ${G.feedback ? `<div class="feedback">${G.feedback}</div>` : ""}
   <div class="dossier-head">This quarter's options · choose one</div>
   <div class="cards">
     ${G.hand.map((a,i)=>`
