@@ -80,7 +80,14 @@
 
   /* ---------- Briefing / country select ---------- */
   .lede{font-size:16px;margin-bottom:18px;color:var(--ink)}
-  .lede em{color:var(--gold);font-style:italic}
+  .lede em{color:var(--ink);font-style:italic}
+  .lede em.seize-pill{
+    font-style:normal;font-family:"Helvetica Neue",Arial,sans-serif;
+    background:#d61f1f;color:#fff;font-weight:800;
+    font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    padding:2px 9px;border-radius:11px;white-space:nowrap;
+    vertical-align:baseline;
+  }
   .countries{display:grid;gap:12px;margin-top:8px}
   .country-card{
     border:1px solid var(--olive-line);padding:16px 18px;border-radius:2px;
@@ -138,9 +145,12 @@
   .fill.obstacle{background:var(--terra)}
   .fill.flash{animation:flash .6s}
   @keyframes flash{0%{filter:saturate(1.8) brightness(1.15)}100%{filter:none}}
-  .delta{font-size:10px;margin-left:6px}
-  /* delta colour reflects whether the move HELPED you, not merely up/down */
-  .delta.good{color:#4a7a2a}.delta.bad{color:var(--terra)}
+  .delta{font-size:11px;margin-left:6px;font-weight:700}
+  /* action deltas: vivid and high-contrast so good/bad reads instantly */
+  .delta.good{color:#2e8b1e}
+  .delta.bad{color:#d83a1a}
+  /* drift: the republic's ambient change — small, muted, secondary */
+  .delta.drift{font-size:9px;font-weight:600;margin-left:4px;opacity:.55}
 
   /* ---------- Dossier (cards) ---------- */
   .dossier-head{
@@ -187,12 +197,13 @@
   .gauge .lab{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:5px}
   .gauge .read{font-size:17px;letter-spacing:.05em;font-weight:600}
   .seize{
-    background:var(--red);color:#f3e6df;padding:14px 22px;border-radius:1px;
-    font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;
-    font-size:13px;letter-spacing:.14em;text-transform:uppercase;
-    transition:background .15s,transform .08s;
+    background:#d61f1f;color:#fff;padding:14px 22px;border-radius:1px;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-weight:800;
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+    box-shadow:0 0 0 0 rgba(214,31,31,.5);
+    transition:background .15s,transform .08s,box-shadow .2s;
   }
-  .seize:hover{background:#94301d;transform:translateY(-1px)}
+  .seize:hover{background:#ef2b2b;transform:translateY(-1px);box-shadow:0 2px 14px rgba(214,31,31,.45)}
 
   /* read-tier colours: dark enough to read on cream, terra -> olive-green ramp */
   .t0{color:#a83a22}.t1{color:#b8512f}.t2{color:#9a7a20}
@@ -241,7 +252,7 @@
    VERSION — bump this on every change so you can confirm a
    GitHub push has refreshed. It shows in the masthead.
    ============================================================ */
-const VERSION = "0.3.7";
+const VERSION = "0.3.10";
 
 /* Lake Geneva motif — replaces the old hard divider rule under the masthead. */
 const LAKE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="122.5 211.5 1243.0 542.0" preserveAspectRatio="xMidYMid meet"><path d="M 135.0 745.5 L 132.5 742.0 L 143.5 729.0 L 149.5 713.0 L 142.5 700.0 L 130.5 694.0 L 140.0 686.5 L 148.0 685.5 L 154.5 680.0 L 155.5 675.0 L 166.0 669.5 L 184.0 649.5 L 202.0 649.5 L 208.0 646.5 L 230.0 648.5 L 234.5 646.0 L 234.5 639.0 L 226.5 629.0 L 228.5 613.0 L 238.0 610.5 L 263.5 588.0 L 259.5 572.0 L 274.5 555.0 L 266.5 544.0 L 295.5 521.0 L 302.5 502.0 L 298.5 481.0 L 309.5 472.0 L 311.5 466.0 L 326.5 450.0 L 329.0 442.5 L 361.0 440.5 L 367.5 433.0 L 366.5 425.0 L 363.5 423.0 L 365.5 416.0 L 383.0 413.5 L 409.0 388.5 L 426.0 378.5 L 429.5 373.0 L 426.5 368.0 L 428.0 364.5 L 450.0 368.5 L 465.0 365.5 L 480.0 357.5 L 490.0 357.5 L 502.0 348.5 L 519.0 343.5 L 516.5 336.0 L 521.0 332.5 L 534.0 328.5 L 541.0 330.5 L 566.0 314.5 L 584.0 318.5 L 598.0 310.5 L 623.0 306.5 L 641.0 295.5 L 648.0 285.5 L 665.0 286.5 L 675.0 276.5 L 692.0 277.5 L 702.5 263.0 L 713.0 256.5 L 727.0 255.5 L 752.0 233.5 L 760.0 234.5 L 761.0 231.5 L 785.0 222.5 L 786.0 224.5 L 794.0 221.5 L 813.0 232.5 L 822.0 232.5 L 823.5 222.0 L 831.0 219.5 L 841.5 234.0 L 856.0 244.5 L 867.0 239.5 L 870.0 243.5 L 872.0 241.5 L 879.0 244.5 L 887.0 237.5 L 900.0 247.5 L 918.0 253.5 L 931.0 262.5 L 938.0 262.5 L 937.0 264.5 L 951.0 263.5 L 976.0 270.5 L 990.0 267.5 L 1028.0 286.5 L 1033.0 286.5 L 1072.0 315.5 L 1080.5 313.0 L 1080.0 306.5 L 1086.0 306.5 L 1102.0 316.5 L 1133.0 317.5 L 1137.0 312.5 L 1157.0 305.5 L 1175.0 317.5 L 1200.0 328.5 L 1204.5 336.0 L 1203.5 342.0 L 1215.0 350.5 L 1240.0 360.5 L 1264.0 359.5 L 1286.0 374.5 L 1290.0 380.5 L 1306.0 389.5 L 1312.0 388.5 L 1330.0 399.5 L 1343.0 402.5 L 1353.0 407.5 L 1356.5 413.0 L 1351.5 426.0 L 1357.5 430.0 L 1353.0 433.5 L 1344.0 430.5 L 1343.0 432.5 L 1338.0 428.5 L 1324.0 428.5 L 1316.0 430.5 L 1305.0 439.5 L 1290.0 435.5 L 1281.0 445.5 L 1270.0 440.5 L 1263.0 444.5 L 1256.0 443.5 L 1243.0 453.5 L 1216.0 443.5 L 1208.0 448.5 L 1205.0 445.5 L 1198.0 446.5 L 1195.5 448.0 L 1198.5 452.0 L 1195.0 453.5 L 1177.0 455.5 L 1167.0 443.5 L 1146.0 439.5 L 1140.0 442.5 L 1138.0 439.5 L 1136.0 442.5 L 1117.0 434.5 L 1110.0 433.5 L 1100.0 437.5 L 1070.0 434.5 L 1038.0 441.5 L 1004.0 426.5 L 973.0 427.5 L 943.0 433.5 L 898.0 423.5 L 872.0 433.5 L 857.0 430.5 L 852.0 435.5 L 836.0 438.5 L 809.0 439.5 L 789.0 435.5 L 768.0 448.5 L 758.0 450.5 L 759.0 452.5 L 741.0 448.5 L 712.0 432.5 L 702.0 432.5 L 679.0 440.5 L 673.0 451.5 L 662.5 456.0 L 652.5 470.0 L 654.0 471.5 L 643.5 473.0 L 642.5 482.0 L 636.0 487.5 L 621.0 488.5 L 595.0 498.5 L 566.0 495.5 L 545.0 506.5 L 524.0 510.5 L 522.5 512.0 L 526.5 513.0 L 524.0 515.5 L 522.0 513.5 L 505.0 531.5 L 474.0 521.5 L 466.5 510.0 L 467.5 504.0 L 454.0 495.5 L 408.0 491.5 L 384.5 504.0 L 377.5 515.0 L 353.5 538.0 L 348.5 550.0 L 341.5 554.0 L 338.5 563.0 L 328.5 572.0 L 326.5 584.0 L 313.5 589.0 L 309.5 596.0 L 309.5 608.0 L 298.5 619.0 L 298.5 634.0 L 295.5 637.0 L 297.5 638.0 L 287.5 646.0 L 287.5 658.0 L 281.0 664.5 L 271.0 663.5 L 266.5 668.0 L 263.5 675.0 L 266.5 681.0 L 257.0 694.5 L 249.0 693.5 L 239.0 707.5 L 229.0 710.5 L 216.0 707.5 L 192.0 713.5 L 190.0 716.5 L 177.0 714.5 L 167.5 720.0 L 159.0 737.5 L 135.0 745.5 Z" fill="#9aa07f" /></svg>`;
@@ -454,7 +465,8 @@ function newGame(country){
     jokerBag: shuffledJokerBag(),  // jokers drawn without replacement
     jokerCooldown: 2,              // no joker in the first couple of quarters
     hand: [],
-    lastDeltas:{},
+    actionDeltas:{},
+    driftDeltas:{},
   };
   G.hand = draw4();
   render();
@@ -549,12 +561,16 @@ function actionFeedback(a){
 function applyAction(a){
   const before = {...G.s};
   for(const k in a.fx) G.s[k] = clamp(G.s[k] + a.fx[k]);
-  // Capture deltas from the player's ACTION only, before the environment drifts,
-  // so the bars' +/- numbers match the feedback line and never blame drift on you.
-  G.lastDeltas = {};
-  for(const k of Object.keys(G.s)) G.lastDeltas[k] = G.s[k]-before[k];
+  // Your action's effect, captured before the environment reacts.
+  const afterAction = {...G.s};
+  G.actionDeltas = {};
+  for(const k of Object.keys(G.s)) G.actionDeltas[k] = afterAction[k]-before[k];
   G.heat += (a.heat||0);
   applyDrift();
+  // The republic's own drift this quarter, captured separately so it's shown
+  // as its own quiet signal rather than blamed on you or hidden entirely.
+  G.driftDeltas = {};
+  for(const k of Object.keys(G.s)) G.driftDeltas[k] = G.s[k]-afterAction[k];
   G.feedback = actionFeedback(a);
   G.quarter++;
   if(G.quarter > 20){ endGame(false, "term"); return; }
@@ -585,7 +601,7 @@ function renderStart(){
   app.innerHTML = masthead() + `
   <div class="pad">
     <p class="lede">You have just been elected President of a democratic republic. The Institute extends its congratulations — and a single instruction.</p>
-    <p class="lede">Within your five-year term — <em>twenty quarters</em> — you are to convert this mandate into permanent power. You may attempt to <em>seize power</em> once, and only once. Choose the moment when the conditions are ripe; choose wrongly, and you will be removed.</p>
+    <p class="lede">Within your five-year term — <em>twenty quarters</em> — you are to convert this mandate into permanent power. You may attempt to <em class="seize-pill">seize power</em> once, and only once. Choose the moment when the conditions are ripe; choose wrongly, and you will be removed.</p>
     <p class="lede">Each republic answers to a different logic. The variables are the same everywhere. What they <em>mean</em> is not. Discovering that is your examination.</p>
     <div class="dossier-head centered">Select your republic</div>
     <div class="countries">
@@ -608,17 +624,21 @@ function renderStart(){
 
 function meterRow(v){
   const val = G.s[v.k];
-  const d = G.lastDeltas[v.k];
-  // a move is "good" if it pushed a position var up, or an obstacle var down
+  const da = (G.actionDeltas||{})[v.k] || 0;  // your action's effect
+  const dd = (G.driftDeltas||{})[v.k] || 0;    // the republic's drift
+  const helped = x => v.obstacle ? x<0 : x>0;  // valence-aware
   let deltaHTML = "";
-  if(d){
-    const helped = v.obstacle ? d<0 : d>0;
-    deltaHTML = `<span class="delta ${helped?'good':'bad'}">${d>0?'+':''}${d}</span>`;
+  if(da){
+    deltaHTML += `<span class="delta ${helped(da)?'good':'bad'}">${da>0?'+':''}${da}</span>`;
+  }
+  if(dd){
+    deltaHTML += `<span class="delta drift ${helped(dd)?'good':'bad'}">~${dd>0?'+':''}${dd}</span>`;
   }
   const obs = v.obstacle ? " obstacle" : "";
+  const flash = (da||dd) ? "flash" : "";
   return `<div class="meter">
     <div class="top"><span class="label">${v.name}</span><span class="val">${val}${deltaHTML}</span></div>
-    <div class="track${obs}"><div class="fill${obs} ${d?'flash':''}" style="width:${val}%"></div></div>
+    <div class="track${obs}"><div class="fill${obs} ${flash}" style="width:${val}%"></div></div>
   </div>`;
 }
 
