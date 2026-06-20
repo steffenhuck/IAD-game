@@ -149,6 +149,13 @@
   }
   .card .name{font-size:16px;letter-spacing:.02em;margin-bottom:6px;color:var(--paper)}
   .card .flavor{font-size:12px;color:var(--paper-dim);line-height:1.4;flex:1}
+  .card.joker{
+    border-color:var(--gold);
+    background:linear-gradient(180deg, rgba(184,164,78,.14), rgba(0,0,0,.12));
+  }
+  .card.joker:hover{border-color:#d8c478;background:linear-gradient(180deg, rgba(184,164,78,.22), rgba(0,0,0,.2))}
+  .card.joker .cat{color:#e0cf7a}
+  .card.joker .name::after{content:" ★";color:var(--gold);font-size:12px}
 
   /* ---------- Seize bar ---------- */
   .seizebar{
@@ -208,9 +215,13 @@
 
 <script>
 /* ============================================================
-   THE ASCENDANCY — IAD prototype v0.3
+   THE ASCENDANCY — IAD prototype
    Six visible variables, hidden success functions, one-shot grab.
+   ------------------------------------------------------------
+   VERSION — bump this on every change so you can confirm a
+   GitHub push has refreshed. It shows in the masthead.
    ============================================================ */
+const VERSION = "0.3.1";
 
 const VARS = [
   {k:"T", name:"Treasury",            blurb:"Government financial resources", obstacle:false},
@@ -232,7 +243,7 @@ const DECK = [
   {cat:"Economic", name:"Subsidize fuel",        fx:{P:+8,T:-8}, f:"Cheap petrol buys quiet streets.", heat:0},
   {cat:"Economic", name:"Infrastructure program",fx:{P:+6,E:+4,T:-7}, f:"Ribbons, cranes, and grateful contractors.", heat:0},
   {cat:"Economic", name:"Sovereign wealth raid", fx:{T:+14,S:-5,I:-3}, f:"The future can pay for the present.", heat:2},
-  {cat:"Economic", name:"Currency controls",     fx:{T:+7,S:-6,O:-3}, f:"Capital stays home, whether it likes it or not.", heat:2},
+  {cat:"Economic", name:"Currency controls",     fx:{T:+7,S:-6,P:-3}, f:"Capital stays home, whether it likes it or not.", heat:2},
 
   // ELITE
   {cat:"Elite", name:"Reward oligarchs",         fx:{E:+11,T:-8}, f:"Loyalty is purchased, never given.", heat:1},
@@ -264,7 +275,7 @@ const DECK = [
 
   // INTERNATIONAL
   {cat:"International", name:"Sign a trade pact", fx:{S:+9,T:+5,O:-2}, f:"Prosperity bought abroad pacifies at home.", heat:0},
-  {cat:"International", name:"Join an alliance",  fx:{S:+10,I:+3}, f:"Respectability has its uses — and its leashes.", heat:0},
+  {cat:"International", name:"Join an alliance",  fx:{S:+11,O:-2,I:+2}, f:"Respectability has its uses — and its leashes.", heat:0},
   {cat:"International", name:"Expel foreign NGOs",fx:{O:-7,I:-4,S:-8}, f:"No more grants for the inconvenient.", heat:3},
   {cat:"International", name:"Court foreign investment",fx:{T:+10,S:+5,P:-2}, f:"Money has no politics, only appetite.", heat:0},
   {cat:"International", name:"Stage a border crisis",fx:{P:+9,O:-5,S:-7}, f:"Nothing unites a nation like a manufactured enemy.", heat:3},
@@ -275,7 +286,7 @@ const DECK = [
   {cat:"Economic", name:"Public works splurge",  fx:{P:+7,E:+3,T:-8}, f:"Concrete is the most loyal of materials.", heat:1},
   {cat:"Economic", name:"Devalue the currency",  fx:{T:+9,P:-5,S:-3}, f:"Exporters cheer; savers do not.", heat:1},
   {cat:"Economic", name:"Nationalize a bank",    fx:{T:+11,E:-4,I:-3,S:-3}, f:"The state's hand on the till.", heat:2},
-  {cat:"Economic", name:"Wage freeze",           fx:{T:+7,P:-6,O:+2}, f:"Stability, paid for by the salaried.", heat:1},
+  {cat:"Economic", name:"Wage freeze",           fx:{T:+8,P:-6}, f:"Stability, paid for by the salaried.", heat:1},
   {cat:"Economic", name:"Free electricity month",fx:{P:+9,T:-9}, f:"Light, briefly, at the Republic's expense."},
   {cat:"Economic", name:"Tax the diaspora",      fx:{T:+8,S:-4}, f:"Loyalty should follow you across borders.", heat:1},
 
@@ -290,7 +301,7 @@ const DECK = [
 
   // Institutional
   {cat:"Institutional", name:"Rewrite the constitution",fx:{I:-12,O:-3,S:-4}, f:"A new charter, written to your measurements.", heat:4},
-  {cat:"Institutional", name:"Lower the voting age",fx:{P:+6,O:-3,I:-2}, f:"New voters, helpfully impressionable.", heat:1},
+  {cat:"Institutional", name:"Lower the voting age",fx:{P:+7,I:-2}, f:"New voters, helpfully impressionable.", heat:1},
   {cat:"Institutional", name:"Abolish term limits",fx:{I:-9,O:-4,S:-3}, f:"Why should a good thing ever end?", heat:4},
   {cat:"Institutional", name:"Pack the senate",  fx:{I:-9,E:+4,O:-3}, f:"Fill the chamber with friends and call it reform.", heat:3},
   {cat:"Institutional", name:"Declare a state of emergency",fx:{O:-8,I:-7,P:-3,S:-3}, f:"Extraordinary times, indefinitely extended.", heat:4},
@@ -303,7 +314,7 @@ const DECK = [
   {cat:"Media", name:"License the journalists",  fx:{I:-7,O:-4,S:-3}, f:"A free press, now requiring a permit.", heat:3},
   {cat:"Media", name:"Seed the social feeds",    fx:{P:+7,O:-3,I:-2}, f:"A thousand sincere accounts, all yours.", heat:2},
   {cat:"Media", name:"Award the state film prize",fx:{P:+5,E:+3,T:-3}, f:"Culture, decorated and domesticated."},
-  {cat:"Media", name:"Tax printing presses",     fx:{I:-6,O:-3,T:+3}, f:"Newsprint grows expensive for the disloyal.", heat:3},
+  {cat:"Media", name:"Tax printing presses",     fx:{I:-6,O:-3,P:-2}, f:"Newsprint grows expensive for the disloyal.", heat:3},
 
   // Security
   {cat:"Security", name:"Arm a loyalist militia",fx:{E:+5,O:-7,I:-4,S:-3}, f:"Volunteers, conveniently devoted.", heat:4},
@@ -318,6 +329,14 @@ const DECK = [
   {cat:"International", name:"Cut a strongman a deal",fx:{S:+6,E:+4,O:-3}, f:"Friends abroad ask fewer awkward questions.", heat:2},
   {cat:"International", name:"Withdraw from the court",fx:{O:-5,I:-4,S:-7}, f:"No foreign judges over a sovereign hand.", heat:3},
   {cat:"International", name:"Win an Olympic bid", fx:{S:+8,P:+6,T:-6}, f:"Spectacle as statecraft.", heat:1},
+
+  // --- JOKERS: rare windfalls, drawn far less often, no real downside ---
+  {cat:"Fortune", name:"A resource boom",        fx:{T:+16,P:+6,E:+4}, f:"The ground itself seems to favour you.", heat:0, joker:true},
+  {cat:"Fortune", name:"The opposition splinters",fx:{O:-14,P:+4}, f:"Your enemies discover they hate each other more than you.", heat:0, joker:true},
+  {cat:"Fortune", name:"A rival's disgrace",     fx:{O:-12,E:+5}, f:"A scandal, impeccably timed, removes an inconvenient man.", heat:0, joker:true},
+  {cat:"Fortune", name:"A wave of goodwill",     fx:{P:+13,S:+5}, f:"For reasons no one can name, the country adores you this season.", heat:0, joker:true},
+  {cat:"Fortune", name:"The generals declare for you",fx:{E:+14,O:-4}, f:"The barracks send word: they are yours.", heat:0, joker:true},
+  {cat:"Fortune", name:"A foreign benefactor",   fx:{T:+12,S:+8}, f:"A powerful friend abroad opens an unexpected hand.", heat:0, joker:true},
 ];
 
 /* ---- Countries: hidden success functions ----
@@ -414,10 +433,23 @@ function newGame(country){
   };
   render();
 }
-function draw4(){
-  const idx = [...DECK.keys()];
+const NORMAL_POOL = DECK.filter(c=>!c.joker);
+const JOKER_POOL  = DECK.filter(c=>c.joker);
+const JOKER_HAND_CHANCE = 0.16; // chance a given hand contains one joker
+
+function sample(pool, n, exclude){
+  const idx=[...pool.keys()].filter(i=>!exclude||!exclude.has(pool[i]));
   for(let i=idx.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[idx[i],idx[j]]=[idx[j],idx[i]];}
-  return idx.slice(0,4).map(i=>DECK[i]);
+  return idx.slice(0,n).map(i=>pool[i]);
+}
+function draw4(){
+  // At most one joker per hand, and only sometimes; the other slots are normal.
+  const wantJoker = JOKER_POOL.length && Math.random() < JOKER_HAND_CHANCE;
+  const hand = sample(NORMAL_POOL, wantJoker ? 3 : 4);
+  if(wantJoker) hand.push(sample(JOKER_POOL,1)[0]);
+  // shuffle so the joker isn't always in the same slot
+  for(let i=hand.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[hand[i],hand[j]]=[hand[j],hand[i]];}
+  return hand;
 }
 /* The republic resists, and resistance grows with suspicion. Each aggressive
    action raises Heat (the hidden cost of ambition). Heat accelerates how fast
@@ -478,10 +510,12 @@ function actionFeedback(a){
 function applyAction(a){
   const before = {...G.s};
   for(const k in a.fx) G.s[k] = clamp(G.s[k] + a.fx[k]);
-  G.heat += (a.heat||0);
-  applyDrift();
+  // Capture deltas from the player's ACTION only, before the environment drifts,
+  // so the bars' +/- numbers match the feedback line and never blame drift on you.
   G.lastDeltas = {};
   for(const k of Object.keys(G.s)) G.lastDeltas[k] = G.s[k]-before[k];
+  G.heat += (a.heat||0);
+  applyDrift();
   G.feedback = actionFeedback(a);
   G.quarter++;
   if(G.quarter > 20){ endGame(false, "term"); return; }
@@ -503,7 +537,7 @@ function masthead(){
   return `<header>
     <div class="eyebrow">Institute for the Advancement of Dictatorships</div>
     <h1>The Ascendancy</h1>
-    <div class="sub">A Practical Examination · Field Module 0.3</div>
+    <div class="sub">A Practical Examination · Field Module ${VERSION}</div>
   </header>`;
 }
 
@@ -568,8 +602,8 @@ function renderGame(){
   <div class="dossier-head">This quarter's options · choose one</div>
   <div class="cards">
     ${G.hand.map((a,i)=>`
-      <div class="card" onclick="applyAction(G.hand[${i}])">
-        <div class="cat">${a.cat}</div>
+      <div class="card${a.joker?' joker':''}" onclick="applyAction(G.hand[${i}])">
+        <div class="cat">${a.joker?'Fortune favours you':a.cat}</div>
         <div class="name">${a.name}</div>
         <div class="flavor">${a.f}</div>
       </div>`).join("")}
